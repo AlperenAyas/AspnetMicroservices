@@ -14,13 +14,11 @@ namespace Discount.Grpc.Services
     public class DiscountService : DiscountProtoService.DiscountProtoServiceBase
     {
         private readonly IDiscountRepository _repository;
-        private readonly ILogger _logger;
         private readonly IMapper _mapper;
 
-        public DiscountService(IDiscountRepository repository, ILogger logger, IMapper mapper)
+        public DiscountService(IDiscountRepository repository, IMapper mapper)
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper)); ;
         }
 
@@ -32,7 +30,7 @@ namespace Discount.Grpc.Services
                 throw new RpcException(new Status(StatusCode.NotFound, $"Discount with ProductName={request.ProductName} not exists.")); 
             }
 
-            _logger.LogInformation("Discount is retrieved for ProductName : {productName} , Amount : {amount}", coupon.ProductName, coupon.Amount);
+            //_logger.LogInformation("Discount is retrieved for ProductName : {productName} , Amount : {amount}", coupon.ProductName, coupon.Amount);
             var couponModel = _mapper.Map<CouponModel>(coupon);
 
             return couponModel;
@@ -42,7 +40,7 @@ namespace Discount.Grpc.Services
         {
             var mappedCoupon = _mapper.Map<Coupon>(request.Coupon);
             var coupon = await _repository.CreateDiscount(mappedCoupon);
-            _logger.LogInformation("Discount is succsessfuly created. Productname : {ProductName}", mappedCoupon.ProductName);
+            //_logger.LogInformation("Discount is succsessfuly created. Productname : {ProductName}", mappedCoupon.ProductName);
 
             return _mapper.Map<CouponModel>(coupon);
         }
@@ -51,7 +49,7 @@ namespace Discount.Grpc.Services
         {
             var mappedCoupon = _mapper.Map<Coupon>(request.Coupon);
             var coupon = await _repository.UpdateDiscount(mappedCoupon);
-            _logger.LogInformation("Discount is succsessfuly updated. Productname : {ProductName}", mappedCoupon.ProductName);
+            //_logger.LogInformation("Discount is succsessfuly updated. Productname : {ProductName}", mappedCoupon.ProductName);
 
             return _mapper.Map<CouponModel>(coupon);
         }
@@ -59,7 +57,7 @@ namespace Discount.Grpc.Services
         public override async Task<DeleteDiscountResponse> DeleteDiscount(DeleteDiscountRequest request, ServerCallContext context)
         {
             var deleted = await _repository.DeleteDiscount(request.ProductName);
-            _logger.LogInformation("Discount is succsessfuly deleted. Productname : {ProductName}", request.ProductName);
+            //_logger.LogInformation("Discount is succsessfuly deleted. Productname : {ProductName}", request.ProductName);
 
             var response = new DeleteDiscountResponse
             {
